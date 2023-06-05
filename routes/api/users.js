@@ -3,8 +3,6 @@ const router = express.Router();
 const crypto = require('crypto');
 const {verifyJwtToken, generateJwtToken} = require('../../db/jwt/index');
 
-const regexMotDePasse = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
-
 const User = require('../../db/models/User');
 
 router.post('/login', async (req, res) => {
@@ -23,7 +21,7 @@ router.post('/login', async (req, res) => {
             }
             res.json({jwt : token});
         })
-        .catch(err => res.status(400).json({message: "Erreur lors de la connexion"}));
+        .catch(err => res.status(400).json({message: err}));
 
 });
 router.post('/register', async (req, res) => {
@@ -59,7 +57,7 @@ router.post('/register', async (req, res) => {
             res.json({jwt : token});
         })
         .catch(err => {
-            return res.status(400).json({message: "Erreur lors de l'ajout de l'utilisateur"});
+            return res.status(400).json({message: err});
         });
 
 

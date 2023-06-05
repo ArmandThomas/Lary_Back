@@ -3,14 +3,18 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
-    _idUser: String,
+    idUser: String,
     name : String,
     brand : String,
     description : String,
     image : String,
     openFoodFactsId : String,
+    barcode : String,
+    nutritionGrade : String,
     quantity : Number,
-    barcode : String
+    expirationDate : Date || null,
+    where : String,
+    ingredients : String,
 });
 
 module.exports = mongoose.model('Product', ProductSchema);

@@ -9,20 +9,13 @@ const Url = "https://world.openfoodfacts.org/api/v2/search";
 
 router.post('/', requiredUserPrivileges, async (req, res) => {
 
-    const {barcode, quantity} = req.body;
+    const {barcode, quantity , expirationDate, stockage} = req.body;
 
     if (!barcode) {
         return res.status(400).json({message: "Unable to find barcode"});
     }
 
     try {
-
-        const productWithSame = await Product.findOne({idUser: res.locals.user._id, barcode: barcode});
-        if (productWithSame) {
-            productWithSame.quantity += quantity || 1;
-            await productWithSame.save();
-            return res.status(200).json({message: "Product updated"});
-        }
 
         const url = `${Url}?code=${barcode}&page_size=1&json=true`;
         const response = await fetch(url);
@@ -34,14 +27,17 @@ router.post('/', requiredUserPrivileges, async (req, res) => {
         }
 
         const productData = {
-            name: product.abbreviated_product_name_fr,
+            name: product.abbreviated_product_name_fr || product.product_name_fr,
             brand: product.brands,
-            description : product.categories,
             image: product.image_url,
             openFoodFactsId : product.id,
             quantity : quantity || 1,
             idUser : res.locals.user._id,
-            barcode
+            nutritionGrade : product.nutrition_grade_fr,
+            barcode,
+            expirationDate : expirationDate || null,
+            ingredients : product.ingredients_text_fr,
+            where : stockage.toLocaleLowerCase() || 'tous'
         };
 
         await Product.create(productData);
